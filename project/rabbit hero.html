@@ -1,0 +1,349 @@
+<html>
+
+<head>
+<style>
+body{
+  background-image:url("image/mainground.png");
+  background-repeat:repeat;
+}
+    #inform{
+			padding:80px 120px;
+		}
+		.nav-tabs li a{
+			color:#777;
+		}
+
+    #intro{
+      margin-left:450px;
+    }
+
+    #pb{
+      width:100%;
+    }
+</style>
+
+<script language="javascript" type="text/javascript" src="Rabbit_HeroJs.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.cs">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+<div class="container-fluid">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="rabbit hero.html">RabbitHero</a>
+  </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#myCarousel"><span class="glyphicon glyphicon-home"></span></a></li>
+        <li><a href="#main"><span class="glyphicon glyphicon-paperclip"></span> </a></li>
+        <li><a href="#inform"><span class="glyphicon glyphicon-book"></span> </a></li>
+        <li><a href="#character"><span class="glyphicon glyphicon-globe"></span> </a></li>
+    </div>
+  </div>
+</nav>
+
+<div id="myCarousel" class="carousel slide" data-ride="carousel" style="margin-top:50px;">
+
+	<ul class="carousel-indicators">
+		<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+		<li data-target="#myCarousel" data-slide-to="1"></li>
+		<li data-target="#myCarousel" data-slide-to="2"></li>
+	</ul>
+
+	<div class="carousel-inner">
+		<div class="item active">
+			<img src="image/banner1.png" style="width:100%">
+			<div class="container">
+				<div class="carousel-caption">
+          <p>RABBIT HERO</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="item">
+			<img src="image/banner2.png" style="width:100%">
+			<div class="container">
+				<div class="carousel-caption">
+          <p>EGGMON</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="item">
+			<img src="image/banner3.png" style="width:100%">
+			<div class="container">
+				<div class="carousel-caption">
+          <p>ENEMY2</p>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+
+	<a class="left carousel-control" href="#myCarousel" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a>
+	<a class="right carousel-control" href="#myCarousel" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
+</div>
+
+<div id="main">
+<canvas id="canvas" width="1200" height="600" style="margin-top:50px; margin-left:350px; margin-bottom:250px"></canvas>
+</div>
+
+<script>
+
+var viewcanvas = document.getElementById('canvas');
+var viewcontext = viewcanvas.getContext('2d');
+
+var bufcanvas = document.createElement('canvas');
+bufcanvas.width = viewcanvas.width;
+bufcanvas.height = viewcanvas.height;
+var bufcontext = bufcanvas.getContext('2d');
+go();
+</script>
+
+
+
+<script>
+
+$(document).ready(function(){
+  $('body').scrollspy({target: ".navbar", offset: 50});
+
+  $("#myNavbar a").on('click', function(event) {
+
+    event.preventDefault();
+
+    var hash = this.hash;
+    $('html, body').animate({
+      scrollTop: $(hash).offset().top
+    }, 800, function(){
+      window.location.hash = hash;
+    });
+  });
+});
+
+</script>
+
+<div style="background-color: rgba(255,204,204, 0.6); height:1800px;">
+<div class="container" id="inform" style="width:100%; height:1200px;">
+  <h2>GAME INFO</h2>
+  <ul class="nav nav-pills">
+    <li class="active"><a data-toggle="pill" href="#home">How to</a></li>
+    <li><a data-toggle="pill" href="#menu1" onclick="proceed()">Process</a></li>
+    <li><a data-toggle="pill" href="#menu2" onclick="killed()">Kill</a></li>
+    <li><a data-toggle="pill" href="#menu3">Story</a></li>
+  </ul>
+  <div class="tab-content">
+    <div id="home" class="tab-pane fade in active">
+      <h3>Key</h3>
+      <img src="image/a.png"></img>
+      <h3>W:위 S:아래 A:왼쪽 D:오른쪽 <br/>SPACE:공격</h3>
+    </div>
+    <div id="menu1" class="tab-pane fade">
+      <div class="container">
+        <div class="progress" style="margin-top:20px;">
+          <div class="progress-bar progress-bar-striped active" id="pb" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" >
+            PROCESS
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="menu2" class="tab-pane fade">
+      <div id="chart"></div>
+    </div>
+    <div id="menu3" class="tab-pane fade">
+      <h3>Story</h3>
+      <p>전세계에서 AI(Avian Influenze)가 전례없이 유행한다.</p>
+      <p>감염된 조류를 땅에 묻어버린 뒤 며칠 후.. 이상한 괴물들이 등장하게 되는데..</p>
+      <p>세계를 구하러 온 Rabbit Hero.</p>
+      <h4 style="margin-left:400px;">Rabbit Hero의 이동경로</h4>
+      <div id="map" style="width:1000px;height:800px"></div>
+    </div>
+  </div>
+</div>
+<hr/>
+
+<div class="container" id="character">
+  <h1 style="text-align:center">Characters</h1>
+  <br/>
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="image/1.png" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h1>EGGMON</h4>
+                        <h5>Age : 15 </h4>
+                        <h5>Class : C</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="image/3.png" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h1>O-EGGMON</h1>
+                        <h5>Age : 17</h4>
+                        <h5>Class : C</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="image/6.png" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h1>MOLDMON</h4>
+                        <h5>Age : 16</h4>
+                        <h5>Class : B</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-6 col-md-6">
+            <div class="well well-sm">
+                <div class="row">
+                    <div class="col-sm-6 col-md-4">
+                        <img src="image/8.png" class="img-rounded img-responsive" />
+                    </div>
+                    <div class="col-sm-6 col-md-8">
+                        <h1>KING-MOLDMON</h4>
+                        <h5>Age : 20</h4>
+                        <h5>Class : A</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+<script>
+function myMap() {
+  var mapCanvas = document.getElementById("map");
+  var Seoul = new google.maps.LatLng(37.552178, 126.992347);
+  var USA = new google.maps.LatLng(39.293257, -101.976799);
+  var Germany = new google.maps.LatLng(51.603223, 11.537002);
+  var mapOptions = {
+  	center: USA,
+    zoom: 2
+  };
+  var map = new google.maps.Map(mapCanvas, mapOptions);
+
+  var lineSymbol = {
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+          scale: 8,
+          strokeColor: 'pink'
+        };
+
+  function animateCircle(line) {
+      var count = 0;
+      window.setInterval(function() {
+        count = (count + 1) % 200;
+
+        var icons = line.get('icons');
+        icons[0].offset = (count / 2) + '%';
+        line.set('icons', icons);
+    }, 20);
+  }
+
+
+  var line = new google.maps.Polyline({
+    path: [Seoul,USA, Germany],
+    icons: [{
+            icon: lineSymbol,
+            offset: '100%'
+          }],
+          map: map,
+    strokeColor: "black",
+    strokeWeight: 2
+  });
+  animateCircle(line);
+  line.setMap(map);
+}
+
+
+var kill_chart = c3.generate({
+    data: {
+        columns: [
+            ['kill',30]
+        ],
+        type: 'gauge',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    gauge: {
+        label: {
+            format: function(value, ratio) {
+                return value + " KILL";
+            },
+            show: false // to turn off the min/max labels.
+        },
+    min: 0, // 0 is default, //can handle negative min e.g. vacuum / voltage / current flow / rate of change
+    max: 30, // 100 is default
+    units: ' %',
+    width: 39 // for adjusting arc thickness
+    },
+    color: {
+        pattern: ['#FF0000', '#F6C600', '#60B044'], // the three color levels for the percentage values.
+        threshold: {
+//            unit: 'value', // percentage is default
+//            max: 200, // 100 is default
+            values: [10,20,30]
+        }
+    },
+    size: {
+        height: 180
+    }
+});
+
+function killed(){
+setTimeout(function () {
+    kill_chart.load({
+        columns: [['kill', kill]]
+    });
+  }, 1000);
+}
+
+function proceed(){
+  var percent=graphstage * 30 + 10; //변수 받는 부분
+  setTimeout(function () {
+      $("#pb").css('width',percent+'%');
+    }, 1000);
+  }
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBAlOjojzJqN5CEy7iGWtTTiWgCMiPUhXI&callback=myMap"></script>
+
+
+
+
+</body>
+
+
+</html>
